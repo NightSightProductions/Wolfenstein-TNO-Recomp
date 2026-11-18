@@ -28,10 +28,11 @@ include $(FW)/recomp.mk
 
 # superscriptx64.dll (the script VM)
 SUPERSCRIPT_DLL ?= orig_superscript.dll
-$(eval $(call MODULE_RULES,superscriptx64,$(SUPERSCRIPT_DLL),gen_superscript,,))
-# RAD Bink 2: shares superscriptx64's preferred base, so translate it rebased (as DOOM-Recomp does)
+$(eval $(call MODULE_RULES,superscriptx64,$(SUPERSCRIPT_DLL),gen_superscript,--rebase 160000000,))
+# Both DLLs prefer 0x180000000, where arm64 macOS maps its shared cache, so they are translated rebased into the
+# framework's DLL range (0x160000000-0x164000000). RAD Bink 2 goes after superscriptx64, at 0x162000000.
 BINK_DLL ?= orig_bink.dll
-$(eval $(call MODULE_RULES,bink2w64,$(BINK_DLL),gen_bink,--rebase 182000000 --no-abi-trim,-DRT_TSO=0))
+$(eval $(call MODULE_RULES,bink2w64,$(BINK_DLL),gen_bink,--rebase 162000000 --no-abi-trim,-DRT_TSO=0))
 
 gen-dll: gen-superscriptx64
 gen-bink: gen-bink2w64
